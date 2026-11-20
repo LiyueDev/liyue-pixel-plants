@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>pixel-flora · demo</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#EEF2FA;
+    font:13px/1.5 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#3d4657}
+  #stage{position:fixed;inset:0}
+  #grid{position:fixed;inset:0;display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:#dbe2ef}
+  #grid > div{position:relative;background:#EEF2FA}
+  #grid > div > b{position:absolute;left:10px;bottom:8px;z-index:3;font-weight:500;font-size:12px;color:#5b6478}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+
+<script src="pixel-flora.js"></script>
+<script>
+  var q = new URLSearchParams(location.search);
+  var stage = document.getElementById("stage");
+
+  if (q.get("all")) {
+    /* 六种一起摆出来，一行一张：看参数差异用 */
+    stage.remove();
+    var grid = document.createElement("div");
+    grid.id = "grid";
+    document.body.appendChild(grid);
+    var list = [["pear", "梨"], ["peach", "桃"], ["cherry", "樱"], ["ginkgo", "银杏"], ["bush", "灌木"], ["pine", "松"]];
+    list.forEach(function (it) {
+      var cell = document.createElement("div");
+      var tag = document.createElement("b");
+      tag.textContent = it[1];
+      cell.appendChild(tag);
+      grid.appendChild(cell);          /* 先挂进 DOM，再 mount，才量得到尺寸 */
+      PF.mount(cell, { name: it[0], strength: 0.55, gusts: 0.5 });
+    });
+  } else {
+    PF.mount(stage, {
+      name: q.get("p") || "pear",
+      strength: q.has("s") ? +q.get("s") : 1,
+      gusts: q.has("g") ? +q.get("g") : 0.85
+    });
+  }
+</script>
+</body>
+</html>

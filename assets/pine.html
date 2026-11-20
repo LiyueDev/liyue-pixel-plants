@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>松 · pixel-flora</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#EEF2FA;
+    font:14px/1.5 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#3d4657}
+  #stage{position:fixed;inset:0}
+  .mast{position:fixed;left:36px;top:26px;z-index:5;pointer-events:none}
+  .mast h1{margin:0;font-size:36px;font-weight:600;letter-spacing:.2em;color:#2f3b4d}
+  .mast p{margin:2px 0 0;font-size:12px;letter-spacing:.26em;color:#8a95a8;text-transform:uppercase}
+  .hint{position:fixed;right:30px;bottom:24px;z-index:5;font-size:12px;color:#98a2b4;pointer-events:none}
+  .wind{position:fixed;left:36px;bottom:24px;z-index:5;display:flex;gap:6px}
+  .wind button{font:inherit;font-size:12px;padding:5px 12px;border:1px solid #d4dce9;
+    background:rgba(255,255,255,.72);color:#5b6478;border-radius:4px;cursor:pointer}
+  .wind button:hover{background:#fff;border-color:#9fb2cf}
+  .wind button.on{background:#2f3b4d;color:#fff;border-color:#2f3b4d}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="mast"><h1>松</h1><p>Pinus · pixel flora</p></div>
+<div class="wind">
+  <button data-w="0.35">微风</button>
+  <button data-w="1" class="on">起风</button>
+  <button data-w="2.2">大风</button>
+</div>
+<div class="hint">点一下树冠，会晃</div>
+<script src="pixel-flora.js"></script>
+<script>
+  var api = PF.mount(document.getElementById("stage"), { name: "pine", strength: 1, gusts: 0.85 });
+  var cv = api.canvas, plant = api.plant;
+  cv.style.cursor = "pointer";
+  cv.addEventListener("pointerdown", function (e) {
+    var r = cv.getBoundingClientRect();
+    api.shake((e.clientX - r.left) / r.width * plant.scW,
+              (e.clientY - r.top) / r.height * plant.scH);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".wind button"), function (b) {
+    b.addEventListener("click", function () {
+      Array.prototype.forEach.call(document.querySelectorAll(".wind button"), function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+      plant.wind.set({ direction: 1, strength: +b.getAttribute("data-w"), gusts: 0.85 });
+    });
+  });
+</script>
+</body>
+</html>
